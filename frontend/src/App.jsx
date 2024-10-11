@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
+import Jobs from "./components/Jobs";
 const approuter = createBrowserRouter([
   {
     path: "/",
@@ -16,6 +17,10 @@ const approuter = createBrowserRouter([
     path: "/signup",
     element: <Signup/>
   },
+  {
+    path: "/jobs",
+    element: <Jobs/>
+  }
 ])
 function App() {
 
