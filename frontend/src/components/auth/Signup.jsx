@@ -1,6 +1,6 @@
 import React from 'react'
 import Navbar from '../shared/Navbar'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate,useSelector,useDispatch } from 'react-router-dom'
 import { useState } from 'react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
@@ -20,6 +20,8 @@ function Signup() {
         file:""
     });
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const {loading} = useSelector((state)=>state.auth);
     const changeEventHandler = (e) => {
         setInput({
             ...input,
@@ -34,7 +36,6 @@ function Signup() {
     }
     const submitHandler = async (e) => {
         e.preventDefault();
-        
         const formData = new FormData();
         formData.append("fullname", input.fullname);
         formData.append("email", input.email);
@@ -46,6 +47,7 @@ function Signup() {
         }
     
         try {
+            dispatch(setLoading(true));
             const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -60,6 +62,8 @@ function Signup() {
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message);
+        }finally{
+            dispatch(setLoading(false));
         }
     };
     
@@ -141,8 +145,16 @@ function Signup() {
                             className='crusor-pointer'
                             />
                         </div>
-                    </div>
-                    <Button type='submit' className='bg-[#6A38C2] hover:bg-[#5b30a6] text-white p-2 w-full my-4'>Sign Up</Button>
+                    </div>{
+                        loading ? (
+                            <Button className='w-full my-4'>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please Wait
+                            </Button>
+                        ) : 
+                        <Button type='submit' className='bg-[#6A38C2] hover:bg-[#5b30a6] text-white p-2 w-full my-4'>Sign Up</Button>
+
+                    }
                     <span>Already have an account? <Link to="/login" className="text-[#5b30a6]"><span>Login</span></Link></span>
                 </form>
             </div>

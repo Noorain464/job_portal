@@ -10,6 +10,9 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner' 
+import { setLoading } from '@/redux/authSlice'
+import { useSelector,useDispatch } from 'react-redux'
+import { Loader2 } from 'lucide-react'
 function Login() {
     const navigate = useNavigate();
     const [input, setInput] = useState({
@@ -17,6 +20,8 @@ function Login() {
         password:"",
         role:"",
     });
+    const dispatch = useDispatch();
+    const {loading} = useSelector((state)=>state.auth);
     const changeEventHandler = (e) => {
         setInput({
             ...input,
@@ -26,6 +31,7 @@ function Login() {
     const submitHandler = async(e)=>{
         e.preventDefault();
         try {
+            dispatch(setLoading(true));
             const res = await axios.post(`${USER_API_END_POINT}/login`,input,{
                 headers:{
                     "Content-Type":"application/json",
@@ -38,6 +44,8 @@ function Login() {
             }
         } catch (error) {
             console.log(error);
+        }finally{
+            dispatch(setLoading(false));
         }
     }
     return (
@@ -92,7 +100,16 @@ function Login() {
                             </div>
                         </RadioGroup>
                     </div>
-                    <Button type='submit' className='bg-[#6A38C2] hover:bg-[#5b30a6] text-white p-2 w-full my-4'>Login</Button>
+                    {
+                        loading ? (
+                            <Button className='w-full my-4'>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please Wait
+                            </Button>
+                        ) : 
+                        <Button type='submit' className='bg-[#6A38C2] hover:bg-[#5b30a6] text-white p-2 w-full my-4'>Login</Button>
+
+                    }
                     <span>Don't have an account? <Link to="/signup" className="text-[#5b30a6]"><span>Sign Up</span></Link></span>
                 </form>
             </div>
