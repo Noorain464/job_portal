@@ -48,6 +48,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         }
 
         try {
+            setLoading(true);
             const res = await axios.post(`${USER_API_END_POINT}/profile/update`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -57,7 +58,6 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
             if (res.data.success) {
                 dispatch(setUser(res.data.user));
                 toast.success(res.data.message);
-                setOpen(false);
             } else {
                 toast.error(res.data.message);
             }
@@ -150,19 +150,11 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                             <Input
                                 id="file"
                                 name="file"
-                                onChange={fileChangeHandler}
                                 type="file"
+                                onChange={fileChangeHandler}
                                 accept="application/pdf"
                                 className="col-span-3"
                             />
-                            {/* Optionally display the current resume */}
-                            {user?.profile?.resume && (
-                                <div className="col-span-3">
-                                    <a href={user.profile.resume} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                                        View Current Resume
-                                    </a>
-                                </div>
-                            )}
                         </div>
                     </div>
                     <DialogFooter>

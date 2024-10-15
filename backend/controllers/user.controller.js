@@ -1,6 +1,8 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
     try {
@@ -115,13 +117,12 @@ export const logout = async(req,res)=>{
 export const updateProfile = async (req, res) => {
     try {
         const { fullname, email, phoneNumber, bio, skills } = req.body;
+        
+        //cloudinary
         const file = req.file;
-        if (!fullname || !email || !phoneNumber || !bio || !skills) {
-            return res.status(400).json({
-                message: "Something is missing",
-                success: false
-            });
-        }
+        const fileUri = getDataUri(file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+        
         let skillsArray;
         if(skills){
             skillsArray = skills.split(",");
@@ -129,8 +130,6 @@ export const updateProfile = async (req, res) => {
         const userId = req.id; // Middleware authentication
 
         let user = await User.findById(userId);
-
-        console.log(user);
 
         if (!user) {
             return res.status(400).json({
@@ -147,7 +146,10 @@ export const updateProfile = async (req, res) => {
         if(skillsArray) user.profile.skills = skillsArray;
 
         // Resume comes later here..
-
+        if(cloudResponse){
+            user.profile.resume = cloudResponse.secure_url;
+            user.profile.resumeOriginalName = file.originalname;
+        }
         
         await user.save();
 
@@ -168,9 +170,5 @@ export const updateProfile = async (req, res) => {
 
     } catch (error) {
         console.log(error.stack);
-        return res.status(500).json({
-            message: "Internal server error",
-            success: false
-        });
     }
 };
