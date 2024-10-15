@@ -8,9 +8,11 @@ import { Mail } from "lucide-react";
 import { Contact } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Label } from "@radix-ui/react-label";
+import UpdateProfileDialog from "./UpdateProfileDialog";
 const skills = ["HTML", "CSS", "JavaScript", "React", "Node.js", "MongoDB"];
+const isPresent = true;
 function Profile() {
-    const isPresent = true;
+    const [open, setOpen] = React.useState(false);
     return (
         <div>
             <Navbar />
@@ -28,7 +30,7 @@ function Profile() {
                                 cum vitae!
                             </p>
                         </div>
-                        <Button className="text-right">
+                        <Button onClick={() => setOpen(true)} className="text-right">
                             <Pen />
                         </Button>
                     </div>
@@ -70,6 +72,7 @@ function Profile() {
                 <h1 className="font-bold text-lg my-5">Applied Jobs</h1>
                 <ApplicationTable />
             </div>
+            <UpdateProfileDialog open={open} setOpen={setOpen} />
         </div>
     );
 }

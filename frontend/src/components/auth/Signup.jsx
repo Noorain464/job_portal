@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom'
 import { USER_API_END_POINT } from '@/utils/constant.jsx'
 import { toast } from 'sonner'
 import axios from 'axios'
+import { Loader2 } from 'lucide-react'
+import { setLoading} from '@/redux/authSlice'
 function Signup() {
     const [input, setInput] = useState({
         fullname:"",
