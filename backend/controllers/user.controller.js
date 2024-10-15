@@ -116,7 +116,6 @@ export const updateProfile = async (req, res) => {
     try {
         const { fullname, email, phoneNumber, bio, skills } = req.body;
         const file = req.file;
-
         if (!fullname || !email || !phoneNumber || !bio || !skills) {
             return res.status(400).json({
                 message: "Something is missing",
@@ -145,12 +144,14 @@ export const updateProfile = async (req, res) => {
         if(email) user.email = email;
         if(phoneNumber) user.phoneNumber = phoneNumber;
         if(bio) user.profile.bio = bio;
+        if(skillsArray) user.profile.skills = skillsArray;
 
         // Resume comes later here..
 
+        
         await user.save();
 
-        const updatedUser = {
+        user = {
             _id: user._id,
             fullname: user.fullname,
             email: user.email,
@@ -161,12 +162,12 @@ export const updateProfile = async (req, res) => {
 
         return res.status(200).json({
             message: "Profile updated successfully",
-            user: updatedUser,
+            user,
             success: true
         });
 
     } catch (error) {
-        console.log(error);
+        console.log(error.stack);
         return res.status(500).json({
             message: "Internal server error",
             success: false
