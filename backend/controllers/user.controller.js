@@ -13,7 +13,9 @@ export const register = async (req, res) => {
                 success: false
             });
         }
-
+        const file = req.file;
+        const fileUri = getDataUri(file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
         const user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({
@@ -29,6 +31,9 @@ export const register = async (req, res) => {
             phoneNumber,
             password: hashedPassword,
             role,
+            profile: {
+                profilePhoto: cloudResponse.secure_url,
+            }
         });
 
         return res.status(201).json({
@@ -82,7 +87,7 @@ export const login = async (req, res) => {
         }
 
         const tokenData = { userId: user._id };
-        const token = await jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
 
         user = {
             _id: user._id,
@@ -109,10 +114,15 @@ export const login = async (req, res) => {
     }
 };
 export const logout = async(req,res)=>{
-    return res.status(200).cookie('token',"",{maxAge:0}).json({
-        message:"Logged out Successfully",
-        success:true
-    });
+    try {
+        
+        return res.status(200).cookie('token',"",{maxAge:0}).json({
+            message:"Logged out Successfully",
+            success:true
+        });
+    } catch (error) {
+        console.log(error);   
+    }
 }
 export const updateProfile = async (req, res) => {
     try {
@@ -121,7 +131,9 @@ export const updateProfile = async (req, res) => {
         //cloudinary
         const file = req.file;
         const fileUri = getDataUri(file);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content,{
+            resource_type: "raw",
+        });
         
         let skillsArray;
         if(skills){

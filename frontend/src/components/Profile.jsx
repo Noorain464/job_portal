@@ -62,7 +62,7 @@ function Profile() {
                     <Label className="text-medium font-bold">Resume</Label>
                     {
                         isPresent ? (
-                            <a target="blank" href={user?.profile?.resume} className="text-blue-500 w-full hover:underline">{user?.profile?.resumeOriginalName}</a>
+                            <a target="blank" href={user?.profile?.resume} className="text-blue-500 w-full hover:underline">My Resume</a>
                         ) : <span>No Resume</span>
                     }
                 </div>
