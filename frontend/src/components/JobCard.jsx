@@ -4,13 +4,19 @@ import { Bookmark } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
 import { useNavigate } from 'react-router-dom'
-function JobCard() {
+function JobCard({job}) {
     const navigate = useNavigate();
-    const jobid = "1";
+    // const jobid = "1";
+    const daysAgoFunction = (mongodbTime) => {
+        const createdAt = new Date(mongodbTime);
+        const currentTime = new Date();
+        const diffTime = currentTime - createdAt;
+        return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    }
     return (
         <div className='p-5 rounded-md shadow-xl bg-white border-gray-100'>
             <div className='flex items-center justify-between'>
-                <p className='text-sm text-gray-500'>2 days ago</p>
+                <p className='text-sm text-gray-500'>{daysAgoFunction(job?.createdAt) === 0 ? 'Today' : daysAgoFunction(job?.createdAt) === 1 ? 'Yesterday' : `${daysAgoFunction(job?.createdAt)} days ago`}</p>
                 <Button variant="outline color-gray" className="rounded-full" size='icon'><Bookmark /></Button>
             </div>
             <div className='flex items-center gap-2 my-2'>
@@ -20,22 +26,22 @@ function JobCard() {
                     </Avatar>
                 </Button>
                 <div>
-                    <h1>Company Name</h1>
-                    <p>India</p>
+                    <h1>{job?.company?.name}</h1>
+                    <p>{job?.location}</p>
                 </div>
             </div>
             <div>
-                <h1 className='font-bold text-lg my-2'>Title</h1>
-                <p className='text-gray-600'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A maiores praesentium reiciendis unde cupiditate quibusdam inventore, beatae adipisci eligendi in.</p>
+                <h1 className='font-bold text-lg my-2'>{job?.title}</h1>
+                <p className='text-gray-600'>{job?.description}</p>
             </div>
 
             <div className='flex items-center gap-2 mt-4'>
-                <Badge className={'text-blue-700 font-bold'} variant="ghost"> 12 Positions</Badge>
-                <Badge className={'text-[#F83002] font-bold'} variant="ghost">Part Time</Badge>
-                <Badge className={'text-[#7209B7] font-bold'} variant="ghost">23 LPA</Badge>
+                <Badge className={'text-blue-700 font-bold'} variant="ghost"> {job?.position} Positions</Badge>
+                <Badge className={'text-[#F83002] font-bold'} variant="ghost">{job?.jobType}</Badge>
+                <Badge className={'text-[#7209B7] font-bold'} variant="ghost">{job?.salary}</Badge>
             </div>
             <div className='flex items-center gap-4 mt-4'>
-                <Button onClick={() => navigate(`/description/${jobid}`)} variant="outline">Details</Button>
+                <Button onClick={() => navigate(`/description/${job?._id}`)} variant="outline">Details</Button>
                 <Button className="bg-[#6A38C2] hover:bg-[#5b30a6] text-white">Save for Later</Button>
             </div>
         </div>
