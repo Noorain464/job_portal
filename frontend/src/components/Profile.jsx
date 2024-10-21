@@ -23,7 +23,7 @@ function Profile() {
                 <div className="flex justify-between">
                     <div className="flex items-center gap-4">
                         <Avatar className="h-24 w-24">
-                            <AvatarImage src="" />
+                            <AvatarImage src={user?.profile?.profilePhoto} />
                         </Avatar>
                         <div>
                             <h1 className="font-medium text-xl">{user?.fullname}</h1>
