@@ -21,7 +21,8 @@ const JobDescription = () => {
             const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${jobId}`,{withCredentials:true});
             if (res.data.success) {
                 setIsApplied(true);
-                const updateSingleJob = {...singleJob,applications:[...singleJob.applications,{applicant:user?._id}]}
+                const updatedSingleJob = {...singleJob,applications:[...singleJob.applications,{applicant:user?._id}]}
+                dispatch(setSingleJob(updatedSingleJob));
                 toast.success(res.data.message);
             }
         } catch (error) {
@@ -35,6 +36,7 @@ const JobDescription = () => {
                 const response = await axios.get(`${JOB_API_END_POINT}/getJob/${jobId}`, { withCredentials: true });
                 if (response.data.success) {
                     dispatch(setSingleJob(response.data.job));
+                    setIsApplied(res.data.job.application.some(application=>application.applicant === user?._id))
                 }
             } catch (error) {
                 console.log(error)
