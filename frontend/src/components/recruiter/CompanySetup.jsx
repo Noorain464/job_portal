@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../shared/Navbar'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
@@ -42,6 +42,7 @@ const CompanySetup = () => {
             formdata.append("file", input.file);
         }
         try {
+            setLoading(true);
             const res = await axios.put(`${COMPANY_API_END_POINT}/update/${params.id}`, formdata,{
                 headers: {
                     'Content-Type' : 'multipart/form-data'
@@ -55,15 +56,22 @@ const CompanySetup = () => {
         } catch (error) {
             console.log(error);
             toast.error(error?.response?.data?.message);
+        }finally{
+            setLoading(false);
         }
     }
+    useEffect(() => {
+        setInput({
+            
+        })
+    })
     return (
         <div>
             <Navbar />
             <div className='max-w-xl mx-auto my-10'>
                 <form onSubmit={submitHandler}>
                     <div className='flex items-center gap-5 p-8'>
-                        <Button variant="outline" className="flex items-center gap-2 text-gray-500 font semibold">
+                        <Button onClick={() => navigate("/admin/companies")} variant="outline" className="flex items-center gap-2 text-gray-500 font semibold">
                             <ArrowLeft />
                             <span>Back</span>
                         </Button>
@@ -115,7 +123,10 @@ const CompanySetup = () => {
                             />
                         </div>
                     </div>
-                    <Button type="submit" className="w-full mt-8 bg-[#6A38C2] text-white">Update</Button>
+                    {
+                        loading ? <Button className='w-full mt-8 bg-[#6A38C2] text-white'><Loader2 className='w-5 h-5 animate-spin' />Please Wait ...</Button> : <Button type="submit" className="w-full mt-8 bg-[#6A38C2] text-white">Update</Button>
+                    }
+                    
                 </form>
             </div>
         </div>
