@@ -1,6 +1,6 @@
 backend:
   image:
-    repository: ghcr.io/noorain464/job-portal-backend
+        repository: noorain464/job-portal-backend
     tag: "dev"                       # CI overrides this with the git SHA
     pullPolicy: IfNotPresent
   replicas: 2

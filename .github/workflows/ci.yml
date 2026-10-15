@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, devops-improvements]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # gitleaks scans history, so it needs all commits
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Syntax check
+        working-directory: backend
+        run: node --check index.js
+
+      - name: Dependency audit
+        working-directory: backend
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Helm lint
+        run: helm lint helm/job-portal
+
+  build:
+    needs: checks
+    runs-on: ubuntu-24.04-arm       # native arm64 build, matching the VM
+    permissions:
+      contents: read
+    env:
+      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/job-portal-backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute short SHA
+        run: echo "SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image (local only)
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          load: true
+          provenance: false
+          build-args: GIT_SHA=${{ env.SHA }}
+          tags: ${{ env.IMAGE }}:${{ env.SHA }}
+
+      - name: Vulnerability scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ env.SHA }}
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push image
+        if: github.event_name == 'push'
+        run: docker push ${{ env.IMAGE }}:${{ env.SHA }}
