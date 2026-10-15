@@ -14,11 +14,14 @@ const app = express();
 
 // middleware
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const corsOptions = {
-    origin:'http://localhost:5173',
-    credentials:true
+    origin: [
+        process.env.FRONTEND_URL || 'https://job-portal-mu-blush.vercel.app',
+        'http://localhost:5173'
+    ],
+    credentials: true
 }
 
 app.use(cors(corsOptions));
@@ -34,7 +37,7 @@ app.use("/api/application", applicationRoute);
 
 
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
     connectDB();
     console.log(`Server running at port ${PORT}`);
 })
