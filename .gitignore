@@ -28,3 +28,6 @@ backend/.env.local
 *.njsproj
 *.sln
 *.sw?
+.env
+.env.*
+!.env.example
