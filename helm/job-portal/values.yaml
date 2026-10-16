@@ -21,3 +21,6 @@ backend:
     enabled: true
     className: nginx
     host: api.job-portal.local
+  metrics:
+    serviceMonitor:
+      enabled: true
