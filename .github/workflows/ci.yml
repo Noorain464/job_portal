@@ -84,3 +84,34 @@ jobs:
       - name: Push image
         if: github.event_name == 'push'
         run: docker push ${{ env.IMAGE }}:${{ env.SHA }}
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: [self-hosted, job-portal-vm]
+    environment: k8s-vm-production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute short SHA
+        run: echo "SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install job-portal helm/job-portal \
+            --set backend.image.tag=${SHA} \
+            --atomic --timeout 3m
+
+      - name: Smoke test
+        run: |
+          for i in $(seq 1 10); do
+            V=$(curl -fsS -H "Host: api.job-portal.local" http://localhost/version || true)
+            echo "attempt $i: $V"
+            if echo "$V" | grep -q "\"${SHA}\""; then echo "OK: running ${SHA}"; exit 0; fi
+            sleep 3
+          done
+          echo "Smoke test failed: expected version ${SHA}"
+          exit 1
