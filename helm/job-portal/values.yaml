@@ -24,3 +24,5 @@ backend:
   metrics:
     serviceMonitor:
       enabled: true
+    alerts:
+      enabled: true
