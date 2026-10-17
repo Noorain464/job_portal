@@ -27,4 +27,4 @@ backend:
     alerts:
       enabled: true
   networkPolicy:
-    enabled: false
+    enabled: true
