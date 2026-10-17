@@ -1,0 +1,9 @@
+14:10:59 START version: {"version":"c9b7c7d"}
+14:10:59 DEPLOY broken tag
+14:12:29 STATE during fault:
+NAME                       READY   STATUS             RESTARTS   AGE
+backend-5b6454c5f4-dzqb9   1/1     Running            0          19h
+backend-5b6454c5f4-sgw2d   1/1     Running            0          19h
+backend-7fd6458bfb-zcprd   0/1     ImagePullBackOff   0          90s
+14:12:29 ROLLBACK
+14:12:29 END version: {"version":"c9b7c7d"}
