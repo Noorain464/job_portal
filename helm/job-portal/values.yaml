@@ -1,0 +1,30 @@
+backend:
+  image:
+    repository: noorain464/job-portal-backend
+    tag: "dev"                       # CI overrides this with the git SHA
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 5000
+  existingSecret: backend-secrets    # the Secret you just created
+  config:
+    PORT: "5000"
+    FRONTEND_URL: "https://job-portal-mu-blush.vercel.app"
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits:   { cpu: 500m, memory: 256Mi }
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+  ingress:
+    enabled: true
+    className: nginx
+    host: api.job-portal.local
+  metrics:
+    serviceMonitor:
+      enabled: true
+    alerts:
+      enabled: true
+  networkPolicy:
+    enabled: true

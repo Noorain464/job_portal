@@ -1,0 +1,5 @@
+Test: a pod in the default namespace calls the backend Service directly.
+Before policy: {"version":"f5ad28e"}
+After policy:  wget: download timed out   (blocked)
+Via Ingress:   {"version":"f5ad28e"}      (still works)
+Prometheus up{job="backend"}: 1, 1        (still scraped)

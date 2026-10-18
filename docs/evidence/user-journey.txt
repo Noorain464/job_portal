@@ -1,0 +1,12 @@
+time:           2026-10-17T15:46:50Z
+version before: {"version":"0bcdf5d"}
+[1 register] HTTP 201 (expected 200|201)
+{"message":"Account created successfully.","success":true}
+[2 login] HTTP 200 (expected 200)
+{"message":"Welcome back DevOps Test","user":{"_id":"6ad3986c506e2b90f1a3cb62","fullname":"DevOps Test","email":"devops-test-20261017154650@example.com","phoneNumber":9999999999,"role":"student","profile":{"profilePhoto":"https://res.cloudinary.com/<redacted>/image/upload/v1792252011/kio3xxnrxksgygbq
+[3 list jobs (with session cookie)] HTTP 200 (expected 200)
+{"jobs":[],"success":true}
+[4 list jobs (no cookie, must be rejected)] HTTP 401 (expected 401)
+{"message":"User not authenticated","success":false}
+version after:  {"version":"0bcdf5d"}
+JOURNEY OK

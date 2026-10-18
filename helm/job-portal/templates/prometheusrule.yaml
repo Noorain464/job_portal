@@ -1,0 +1,44 @@
+{{- if and .Values.backend.metrics.alerts.enabled (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1") }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: backend-alerts
+  labels:
+    app.kubernetes.io/name: backend
+    release: monitoring
+spec:
+  groups:
+    - name: backend.slo
+      rules:
+        - alert: BackendHighErrorRate
+          expr: |
+            sum(rate(http_request_duration_seconds_count{job="backend",route!~"/healthz|/readyz|/metrics",status=~"5.."}[5m]))
+            /
+            sum(rate(http_request_duration_seconds_count{job="backend",route!~"/healthz|/readyz|/metrics"}[5m]))
+            > 0.05
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "More than 5% of user requests are failing with 5xx"
+            action: "Check kubectl logs deploy/backend. If it started right after a deploy, run helm rollback job-portal."
+        - alert: BackendHighLatency
+          expr: |
+            histogram_quantile(0.95,
+              sum by (le) (rate(http_request_duration_seconds_bucket{job="backend",route!~"/healthz|/readyz|/metrics"}[5m]))
+            ) > 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "p95 request latency is above 1 second"
+            action: "Check CPU against limits (kubectl top pods), HPA scaling, and MongoDB Atlas latency."
+        - alert: BackendDown
+          expr: absent(up{job="backend"} == 1)
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "No backend pod is being scraped successfully"
+            action: "Run kubectl get pods and kubectl describe pod. Common causes are readiness failures, Atlas connectivity or DNS."
+{{- end }}

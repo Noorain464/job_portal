@@ -1,0 +1,24 @@
+alertmanager:
+  enabled: false          # skipped to save memory; we'll define alert rules instead
+nodeExporter:
+  enabled: false          # often fails on kind (mount propagation) and isn't needed here
+kubeControllerManager:
+  enabled: false          # kind hides these control-plane endpoints, which would
+kubeScheduler:
+  enabled: false          # show as permanently "down" targets
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false
+prometheus:
+  prometheusSpec:
+    retention: 3d
+    serviceMonitorSelectorNilUsesHelmValues: false   # pick up ServiceMonitors from any release
+    podMonitorSelectorNilUsesHelmValues: false
+    resources:
+      requests: { cpu: 100m, memory: 400Mi }
+      limits:   { memory: 900Mi }
+grafana:
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits:   { memory: 300Mi }

@@ -1,0 +1,4 @@
+5       	Fri Oct 16 19:09:05 2026	superseded	job-portal-0.1.0	dev        	Upgrade complete
+6       	Fri Oct 16 19:10:29 2026	superseded	job-portal-0.1.0	dev        	Rollback to 4   
+7       	Sat Oct 17 14:10:59 2026	superseded	job-portal-0.1.0	dev        	Upgrade complete
+8       	Sat Oct 17 14:12:29 2026	deployed  	job-portal-0.1.0	dev        	Rollback to 6   

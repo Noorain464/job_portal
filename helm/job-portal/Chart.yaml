@@ -1,0 +1,6 @@
+apiVersion: v2
+name: job-portal
+description: Job portal backend on Kubernetes
+type: application
+version: 0.1.0
+appVersion: "dev"
