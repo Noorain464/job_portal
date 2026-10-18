@@ -7,8 +7,8 @@
 | **Project** | Job Portal (React frontend, Express and MongoDB backend) |
 | **Repository** | https://github.com/Noorain464/job_portal |
 | **Baseline commit** | `2a8f3f89d6084b9439f6e36b4d01e986ac197984` ([permanent link](https://github.com/Noorain464/job_portal/commit/2a8f3f89d6084b9439f6e36b4d01e986ac197984)), also tagged `baseline-v0` |
-| **Final commit** | `<FINAL_COMMIT_HASH>` |
-| **Pull request** | `<PR_LINK>` |
+| **Final commit** | Head of the pull request (exact hash is in the PR description and submission form) |
+| **Pull request** | See the submission form (the PR is open against `main`) |
 
 ## The application
 
